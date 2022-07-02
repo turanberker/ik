@@ -59,6 +59,7 @@ public class RequestServiceImpl implements RequestService {
             checkForOldEmployee(employee, requestedDay);
         }
         RequestEntity requestEntity = requestConverter.convertToEntity(createRequestModel);
+        requestEntity.setRequestedCount(requestedDay);
          requestEntity = repository.saveAndFlush(requestEntity);
         return requestConverter.convertToDetailModel(requestEntity);
     }
@@ -113,6 +114,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public RequestDetailModel approve(Long requestId) {
         RequestEntity requestEntity = changeStatus(requestId, EnumRequestStatus.ONAYLANDI);
+        employeeAllowanceDayCountService.removeDaysFromEmployee(requestEntity.getEmployee(),requestEntity.getRequestedCount());
         return requestConverter.convertToDetailModel(requestEntity);
     }
 

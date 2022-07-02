@@ -1,6 +1,8 @@
 package com.mbt.yapikredi.ik.services;
 
+import com.mbt.yapikredi.ik.converter.EmployeeConverter;
 import com.mbt.yapikredi.ik.dto.EmployeeAllowanceModel;
+import com.mbt.yapikredi.ik.dto.EmployeeModel;
 import com.mbt.yapikredi.ik.dto.base.PageModel;
 import com.mbt.yapikredi.ik.entity.EmployeeEntity;
 import com.mbt.yapikredi.ik.entity.QEmployeeAllowanceDayCountEntity;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 
@@ -24,9 +28,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository repository;
 
-    public EmployeeServiceImpl(EntityManager em, EmployeeRepository repository) {
+    private final EmployeeConverter converter;
+
+    private final AnnualLeaveAllowanceService anualLeaveAllowanceService;
+
+    public EmployeeServiceImpl(EntityManager em, EmployeeRepository repository, EmployeeConverter converter, AnnualLeaveAllowanceService anualLeaveAllowanceService) {
         this.em = em;
         this.repository = repository;
+        this.converter = converter;
+        this.anualLeaveAllowanceService = anualLeaveAllowanceService;
     }
 
     @Override
@@ -61,5 +71,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional(readOnly = true)
     public EmployeeEntity getEmployee(Long employeeId) {
         return repository.getReferenceById(employeeId);
+    }
+
+    @Override
+    public EmployeeModel create(EmployeeModel model) {
+        EmployeeEntity employeeEntity = converter.convertToEntity(model);
+        Period intervalPeriod = Period.between(employeeEntity.getStartDate(), LocalDate.now());
+        employeeEntity = repository.save(employeeEntity);
+        if (intervalPeriod.getYears() > 0) {
+            //işe gireli bir yıldan fazla olmuştur
+            anualLeaveAllowanceService.addEmployeeAllowancesForNewEmployee(employeeEntity);
+        }
+        return converter.convertToModel(employeeEntity);
+
     }
 }

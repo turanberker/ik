@@ -7,4 +7,6 @@ import org.springframework.validation.annotation.Validated;
 public interface AnnualLeaveAllowanceService {
 
     void addEmployeeAllowance(EmployeeEntity employee);
+
+    void addEmployeeAllowancesForNewEmployee(EmployeeEntity employee);
 }

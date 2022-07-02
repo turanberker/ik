@@ -7,20 +7,25 @@ import java.time.LocalDate;
 
 public class AllowanceCalculator {
 
-    public static int getNumber(LocalDate startDate){
+    public static int getNumberAccordingToToday(LocalDate startDate) {
         LocalDate today = LocalDate.now();
-        if(startDate.isAfter(today)){
-            throw new UncheckedException(ExceptionData.fromMessage("startdate can not be after today"));
+
+        return getNumber(startDate, today);
+    }
+
+    public static int getNumber(LocalDate employeeStartDate, LocalDate dateToCheck) {
+
+        if (employeeStartDate.isAfter(dateToCheck)) {
+            throw new UncheckedException(ExceptionData.fromMessage("startdate can not be after dateToCheck"));
         }
-        int yearDiff = today.getYear() - startDate.getYear();
-        if(yearDiff==0){
+        int yearDiff = dateToCheck.getYear() - employeeStartDate.getYear();
+        if (yearDiff == 0) {
             return 0;
-        }        else if(yearDiff>=1  &&yearDiff<5){
+        } else if (yearDiff >= 1 && yearDiff < 5) {
             return 15;
-        }else if(yearDiff>=5  &&yearDiff<10){
+        } else if (yearDiff >= 5 && yearDiff < 10) {
             return 18;
-        }
-        else {
+        } else {
             return 24;
         }
     }
