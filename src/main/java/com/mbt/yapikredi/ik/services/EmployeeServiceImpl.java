@@ -1,6 +1,7 @@
 package com.mbt.yapikredi.ik.services;
 
 import com.mbt.yapikredi.ik.converter.EmployeeConverter;
+import com.mbt.yapikredi.ik.dto.CreateEmployeeModel;
 import com.mbt.yapikredi.ik.dto.EmployeeAllowanceModel;
 import com.mbt.yapikredi.ik.dto.EmployeeModel;
 import com.mbt.yapikredi.ik.dto.base.PageModel;
@@ -24,8 +25,6 @@ import java.util.List;
 @Transactional
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private final EntityManager em;
-
     private final EmployeeRepository repository;
 
     private final EmployeeConverter converter;
@@ -33,7 +32,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final AnnualLeaveAllowanceService anualLeaveAllowanceService;
 
     public EmployeeServiceImpl(EntityManager em, EmployeeRepository repository, EmployeeConverter converter, AnnualLeaveAllowanceService anualLeaveAllowanceService) {
-        this.em = em;
         this.repository = repository;
         this.converter = converter;
         this.anualLeaveAllowanceService = anualLeaveAllowanceService;
@@ -47,10 +45,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             booleanBuilder.and(QEmployeeEntity.employeeEntity.firstName.concat(" ").concat(QEmployeeEntity.employeeEntity.lastName).containsIgnoreCase(name));
         }
 
-        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
-
         long totalElementCount = repository.count(booleanBuilder);
-        List<EmployeeAllowanceModel> data = queryFactory.select(Projections.constructor(EmployeeAllowanceModel.class,
+        List<EmployeeAllowanceModel> data = repository.getQueryFactory().select(Projections.constructor(EmployeeAllowanceModel.class,
                                 QEmployeeEntity.employeeEntity.id,
                                 QEmployeeEntity.employeeEntity.firstName,
                                 QEmployeeEntity.employeeEntity.lastName,
@@ -59,6 +55,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 )
                 .from(QEmployeeEntity.employeeEntity)
                 .leftJoin(QEmployeeAllowanceDayCountEntity.employeeAllowanceDayCountEntity)
+                .on(QEmployeeAllowanceDayCountEntity.employeeAllowanceDayCountEntity.employee.eq(QEmployeeEntity.employeeEntity))
                 .where(booleanBuilder)
                 .limit(pageSize)
                 .offset(startPage)
@@ -74,7 +71,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeModel create(EmployeeModel model) {
+    public EmployeeModel create(CreateEmployeeModel model) {
         EmployeeEntity employeeEntity = converter.convertToEntity(model);
         Period intervalPeriod = Period.between(employeeEntity.getStartDate(), LocalDate.now());
         employeeEntity = repository.save(employeeEntity);

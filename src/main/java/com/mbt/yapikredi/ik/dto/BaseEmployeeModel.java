@@ -7,9 +7,7 @@ import javax.validation.constraints.Size;
 
 public class BaseEmployeeModel {
 
-    @NotNull
-    @Positive
-    private Long id;
+
 
     @Size(max = 75)
     @NotBlank
@@ -21,18 +19,9 @@ public class BaseEmployeeModel {
     public BaseEmployeeModel() {
     }
 
-    public BaseEmployeeModel(Long id, String firstName, String lastName) {
-        this.id = id;
+    public BaseEmployeeModel( String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getFirstName() {

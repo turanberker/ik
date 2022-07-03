@@ -1,5 +1,6 @@
 package com.mbt.yapikredi.ik.services;
 
+import com.mbt.yapikredi.ik.dto.CreateEmployeeModel;
 import com.mbt.yapikredi.ik.dto.EmployeeAllowanceModel;
 import com.mbt.yapikredi.ik.dto.EmployeeModel;
 import com.mbt.yapikredi.ik.dto.base.PageModel;
@@ -17,5 +18,5 @@ public interface EmployeeService {
 
     EmployeeEntity getEmployee(Long employeeId);
 
-    EmployeeModel create(EmployeeModel model);
+    EmployeeModel create(CreateEmployeeModel model);
 }

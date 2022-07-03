@@ -47,6 +47,7 @@ public class AnnualLeaveAllowanceServiceImpl implements AnnualLeaveAllowanceServ
             entity.setAllowanceDate(date);
             entity.setNumbersOfDays(daysToAdd);
             totaldaysToAdd += daysToAdd;
+            date=date.plusYears(1);
         }
         employeeAllowanceDayCountService.addDaysToEmployee(employee, totaldaysToAdd);
         repository.saveAll(listToAdd);

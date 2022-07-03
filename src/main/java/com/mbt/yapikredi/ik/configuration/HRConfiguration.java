@@ -1,9 +1,11 @@
 package com.mbt.yapikredi.ik.configuration;
 
+import com.mbt.yapikredi.ik.repository.base.BaseRepositoryImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,8 @@ import java.util.Locale;
 @EnableScheduling
 @EnableAsync
 @Component
+@EnableJpaRepositories(basePackages = "com.mbt.yapikredi.ik.repository",
+        repositoryBaseClass = BaseRepositoryImpl.class)
 public class HRConfiguration {
 
     @Value("${application.translation.properties.baseName}")
