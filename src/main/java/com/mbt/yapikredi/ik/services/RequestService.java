@@ -6,7 +6,6 @@ import com.mbt.yapikredi.ik.dto.RequestDetailModel;
 import com.mbt.yapikredi.ik.dto.RequestListModel;
 import com.mbt.yapikredi.ik.dto.base.PageModel;
 import com.mbt.yapikredi.ik.exceptions.CheckedException;
-import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;

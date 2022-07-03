@@ -37,8 +37,6 @@ public class EmployeeServiceTest {
     @Before
     public void setUp() {
         doNothing().when(allowanceService).addEmployeeAllowancesForNewEmployee(any());
-
-
     }
 
     @Test
