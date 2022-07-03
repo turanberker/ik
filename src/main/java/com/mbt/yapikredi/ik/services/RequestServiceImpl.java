@@ -3,16 +3,17 @@ package com.mbt.yapikredi.ik.services;
 import com.mbt.yapikredi.ik.converter.RequestConverter;
 import com.mbt.yapikredi.ik.data.EnumRequestStatus;
 import com.mbt.yapikredi.ik.dto.CreateRequestModel;
+import com.mbt.yapikredi.ik.dto.EmployeeAllowanceModel;
 import com.mbt.yapikredi.ik.dto.RequestDetailModel;
-import com.mbt.yapikredi.ik.entity.EmployeeAllowanceDayCountEntity;
-import com.mbt.yapikredi.ik.entity.EmployeeEntity;
-import com.mbt.yapikredi.ik.entity.QRequestEntity;
-import com.mbt.yapikredi.ik.entity.RequestEntity;
+import com.mbt.yapikredi.ik.dto.RequestListModel;
+import com.mbt.yapikredi.ik.dto.base.PageModel;
+import com.mbt.yapikredi.ik.entity.*;
 import com.mbt.yapikredi.ik.exceptions.CheckedException;
 import com.mbt.yapikredi.ik.exceptions.ExceptionData;
 import com.mbt.yapikredi.ik.exceptions.UncheckedException;
 import com.mbt.yapikredi.ik.repository.RequestRepository;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import javax.persistence.EntityManager;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -123,6 +125,35 @@ public class RequestServiceImpl implements RequestService {
     public RequestDetailModel reject(Long requestId) throws CheckedException {
         RequestEntity requestEntity = changeStatus(requestId, EnumRequestStatus.REDDEDILDI);
         return requestConverter.convertToDetailModel(requestEntity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageModel<RequestListModel> findRequestsByStatus(EnumRequestStatus requestStatus, Integer pageSize, Integer startPage) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        QRequestEntity requestQuery=QRequestEntity.requestEntity;
+        if(requestStatus!=null){
+            booleanBuilder.and(requestQuery.requestStatus.eq(requestStatus));
+        }
+
+        long totalElementCount = repository.count(booleanBuilder);
+        List<RequestListModel> data = repository.getQueryFactory().select(Projections.bean(RequestListModel.class,
+                        requestQuery.id.as("id"),
+                                requestQuery.employee.id.as("employeeId"),
+                                requestQuery.employee.firstName.concat(" ").concat(requestQuery.employee.lastName).as("employee"),
+                                requestQuery.annualLeaveStart.as("startDate"),
+                                requestQuery.annualLeaveEnd.as("endDate"),
+                                requestQuery.requestStatus.as("status"),
+                                requestQuery.requestedCount.as("requestedCount")
+                        )
+                )
+                .from(requestQuery)
+                .innerJoin(requestQuery.employee)
+                .where(booleanBuilder)
+                .limit(pageSize)
+                .offset(startPage)
+                .fetch();
+        return new PageModel(data, startPage, pageSize, totalElementCount);
     }
 
     private RequestEntity changeStatus(Long requestId, EnumRequestStatus status) throws CheckedException {

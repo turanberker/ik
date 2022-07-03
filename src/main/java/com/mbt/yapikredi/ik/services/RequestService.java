@@ -3,6 +3,8 @@ package com.mbt.yapikredi.ik.services;
 import com.mbt.yapikredi.ik.data.EnumRequestStatus;
 import com.mbt.yapikredi.ik.dto.CreateRequestModel;
 import com.mbt.yapikredi.ik.dto.RequestDetailModel;
+import com.mbt.yapikredi.ik.dto.RequestListModel;
+import com.mbt.yapikredi.ik.dto.base.PageModel;
 import com.mbt.yapikredi.ik.exceptions.CheckedException;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
@@ -20,4 +22,6 @@ public interface RequestService {
     RequestDetailModel approve(@NotNull @Positive Long requestId) throws CheckedException;
 
     RequestDetailModel reject(@NotNull @Positive Long requestId) throws CheckedException;
+
+    PageModel<RequestListModel> findRequestsByStatus(EnumRequestStatus requestStatus, @Positive  @NotNull  Integer pageSize,@PositiveOrZero @NotNull Integer startPage);
 }

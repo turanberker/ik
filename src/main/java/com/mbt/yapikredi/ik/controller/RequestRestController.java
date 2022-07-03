@@ -1,7 +1,11 @@
 package com.mbt.yapikredi.ik.controller;
 
+import com.mbt.yapikredi.ik.data.EnumRequestStatus;
 import com.mbt.yapikredi.ik.dto.CreateRequestModel;
+import com.mbt.yapikredi.ik.dto.EmployeeAllowanceModel;
 import com.mbt.yapikredi.ik.dto.RequestDetailModel;
+import com.mbt.yapikredi.ik.dto.RequestListModel;
+import com.mbt.yapikredi.ik.dto.base.PageModel;
 import com.mbt.yapikredi.ik.exceptions.CheckedException;
 import com.mbt.yapikredi.ik.services.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @RestController
 @RequestMapping("requests")
@@ -35,5 +40,12 @@ public class RequestRestController {
     @PatchMapping(name = "Reject Request", path = "/reject",produces = MediaType.APPLICATION_JSON_VALUE)
     public  ResponseEntity<RequestDetailModel> reject(@NotNull @Positive Long requestId) throws CheckedException {
         return ResponseEntity.ok(requestService.reject(requestId));
+    }
+
+    @GetMapping(name = "GetRequestssByPage", path = "/findAll")
+    public ResponseEntity<PageModel<RequestListModel>> findEmployeeAllowanceList(@RequestParam(name = "status", required = false) EnumRequestStatus status,
+                                                                                 @RequestParam(name = "pageSize" ,required = false,defaultValue = "10") @Positive @NotNull Integer pageSize,
+                                                                                 @RequestParam(name = "startPage",required = false, defaultValue = "0") @PositiveOrZero @NotNull Integer startPage    ) {
+        return ResponseEntity.ok(requestService.findRequestsByStatus(status, pageSize, startPage));
     }
 }
