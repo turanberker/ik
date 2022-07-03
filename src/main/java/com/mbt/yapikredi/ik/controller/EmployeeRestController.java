@@ -18,7 +18,7 @@ import javax.validation.constraints.PositiveOrZero;
 @RestController
 @RequestMapping("employees")
 @Validated
-public class RemployeeRestController {
+public class EmployeeRestController {
 
     @Autowired
     private EmployeeService employeeService;

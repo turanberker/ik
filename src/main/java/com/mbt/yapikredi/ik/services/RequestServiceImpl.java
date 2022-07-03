@@ -21,6 +21,7 @@ import javax.persistence.EntityManager;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -69,9 +70,9 @@ public class RequestServiceImpl implements RequestService {
         LocalDate dateIndex = startDate;
         while (dateIndex.isBefore(endDate)) {
             if (!(dateIndex.getDayOfWeek() == DayOfWeek.SATURDAY || dateIndex.getDayOfWeek() == DayOfWeek.SUNDAY)) {
-                dateIndex = dateIndex.plusDays(1);
                 requestedDay++;
             }
+            dateIndex = dateIndex.plusDays(1);
         }
         return requestedDay;
     }
@@ -112,21 +113,31 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public RequestDetailModel approve(Long requestId) {
+    public RequestDetailModel approve(Long requestId) throws CheckedException {
         RequestEntity requestEntity = changeStatus(requestId, EnumRequestStatus.ONAYLANDI);
         employeeAllowanceDayCountService.removeDaysFromEmployee(requestEntity.getEmployee(),requestEntity.getRequestedCount());
         return requestConverter.convertToDetailModel(requestEntity);
     }
 
     @Override
-    public RequestDetailModel reject(Long requestId) {
+    public RequestDetailModel reject(Long requestId) throws CheckedException {
         RequestEntity requestEntity = changeStatus(requestId, EnumRequestStatus.REDDEDILDI);
         return requestConverter.convertToDetailModel(requestEntity);
     }
 
-    private RequestEntity changeStatus(Long requestId, EnumRequestStatus status) {
-        RequestEntity entity = repository.getReferenceById(requestId);
-        entity.setRequestStatus(status);
-        return repository.save(entity);
+    private RequestEntity changeStatus(Long requestId, EnumRequestStatus status) throws CheckedException {
+        Optional<RequestEntity> optional = repository.findById(requestId);
+
+        if(optional.isPresent()){
+            if(EnumRequestStatus.ONAY_BEKLIYOR.equals(optional.get().getRequestStatus())){
+                optional.get().setRequestStatus(status);
+                return repository.save(optional.get());
+            }else{
+                throw new CheckedException(ExceptionData.fromBundle("requestNotAwaiting"));
+            }
+
+        }else{
+            throw new CheckedException(ExceptionData.fromBundle("requestNotExist"));
+        }
     }
 }

@@ -11,7 +11,10 @@ import org.mapstruct.Mappings;
 public interface RequestConverter {
 
     @Mappings({
-            @Mapping(target = "employeeId", source = "employee.id" )
+            @Mapping(target = "employeeId", source = "employee.id" ),
+            @Mapping(target = "status", source = "requestStatus" ),
+            @Mapping(target = "startDate", source = "annualLeaveStart" ),
+            @Mapping(target = "endDate", source = "annualLeaveEnd" )
     })
     RequestDetailModel convertToDetailModel(RequestEntity entity);
 
