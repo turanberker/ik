@@ -1,5 +1,6 @@
 package com.mbt.yapikredi.ik.controller;
 
+import com.mbt.yapikredi.ik.configuration.SwaggerConfiguration;
 import com.mbt.yapikredi.ik.data.EnumRequestStatus;
 import com.mbt.yapikredi.ik.dto.CreateRequestModel;
 import com.mbt.yapikredi.ik.dto.EmployeeAllowanceModel;
@@ -8,6 +9,8 @@ import com.mbt.yapikredi.ik.dto.RequestListModel;
 import com.mbt.yapikredi.ik.dto.base.PageModel;
 import com.mbt.yapikredi.ik.exceptions.CheckedException;
 import com.mbt.yapikredi.ik.services.RequestService;
+import io.swagger.annotations.Api;
+import io.swagger.models.Swagger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,7 @@ import javax.validation.constraints.PositiveOrZero;
 @RestController
 @RequestMapping("requests")
 @Validated
+@Api( tags = SwaggerConfiguration.REQUEST_TAG)
 public class RequestRestController {
 
     @Autowired

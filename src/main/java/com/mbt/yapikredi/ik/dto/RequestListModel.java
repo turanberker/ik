@@ -1,36 +1,46 @@
 package com.mbt.yapikredi.ik.dto;
 
 import com.mbt.yapikredi.ik.data.EnumRequestStatus;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 
+@ApiModel(value = "İzin taleplerinin listelendiği veri modeli", description = "Model")
 public class RequestListModel {
 
     @NotNull
     @Positive
+    @ApiModelProperty(value = "İzin Talebinin id'si")
     private Long id;
 
     @NotNull
     @Positive
+    @ApiModelProperty(value = "Çalışanın id'si")
     private Long employeeId;
 
     @NotBlank
+    @ApiModelProperty(value = "Çalışanın tam adı")
     private String employee;
 
     @NotNull
+    @ApiModelProperty(value = "Talep edilen izin başlangıç tarihi")
     private LocalDate startDate;
 
     @NotNull
+    @ApiModelProperty(value = "Talep edilen izin bitiş tarihi")
     private LocalDate endDate;
 
     @NotNull
+    @ApiModelProperty(value = "izin talebinin durumu")
     private EnumRequestStatus status;
 
     @NotNull
     @Positive
+    @ApiModelProperty(value = "talep edilen izin miktarı")
     private Integer requestedCount;
 
     public Long getId() {
